@@ -5,6 +5,8 @@
 
 #include "cursepaint.h"
 
+char savename[64] = "";
+
 int height = 33;
 int length = 48;
 char board[33][48];
@@ -18,7 +20,7 @@ char temp;
 char print = 'b';
 int panel2temp = 2;
 
-float version = 0.04;
+float version = 0.05;
 
 
 
@@ -132,13 +134,13 @@ char inputmove(void){
     case 'u': brushc -= 2; break;
     case 'i': brushc += 2; break;
     
-    case 'm': spacing ++; if(spacing>8){spacing = 8;} break;
-    case 'n': spacing --; if(spacing<1){spacing = 1;} break;
+    case '.': spacing ++; if(spacing>8){spacing = 8;} break;
+    case ',': spacing --; if(spacing<1){spacing = 1;} break;
 
               
     case 't': inputtext(); break;
 
-
+    case '+': savefunc(); break;
     case 'q': quitfunc(); break;
   }
   if(dir >= '0' && dir <= '9'){
@@ -160,11 +162,12 @@ char inputmove(void){
 
 void inputtext(void){
   mvprintw(6,80, "TEXT MODE");
-  short storage = 0;
+ int storage = 0;
+
   while(1){
     storage = getch();
     if (storage == '\n'){return;}
-    if (storage == KEY_BACKSPACE){
+    if (storage == KEY_LEFT){
       posx-=spacing;
       mvwaddch(win, posy, posx, ' ');
       board[posy-1][posx-1] = ' ';  
@@ -182,26 +185,69 @@ void inputtext(void){
 }
 
 
-
 void quitfunc(){
   clear();
   printw("Are you sure? (Y)es, (N)o.");
-  char temp = getch();
-  if(temp != 'y'){/*printw(" || %c ||", temp);*/ clear(); return;}
+  temp = getch();
+  if(temp != 'y'){/*printw(" || %c ||", temp);*/ clear(); refresh(); return;}
   clear();
   refresh();  
-  delwin(panelb);
-  delwin(panel);
-  delwin(win);
   
   for(int e = 0; e<height; e++){
     for(int f = 0; f<length; f++){
-      mvwaddch(stdscr,e, f, board[e][f]);
+      mvwaddch(stdscr,e+1, f, board[e][f]);
       if(f == length-1){addch('!');}
     }
   }
+mvprintw(0,0,"would you like to save this image ? (Y)es, (N)o, (R)eturn");
+  temp = getch();
+if(temp != 'y' && temp != 'n'){clear(); refresh(); return;}
+if(temp == 'y'){savefunc(); }  
+  delwin(panelb);
+  delwin(panel);
+  delwin(win);
 
   getch();
  endwin();
   exit(0);
+}
+
+
+int savefunc(void){
+  
+
+  echo();
+  
+
+  if (strcmp(savename, "")!=0){
+  mvprintw(0,0,"Do you want to give a new filename? (Y)es, (N)o: ");
+  if(getch() != 'y'){return truesave();}
+  }
+  do{
+  clear(); refresh();
+  mvprintw(0,0,"Please state the save name: ");
+  refresh();
+  getstr(savename);
+  mvprintw(2,0, "Is %s.txt your desired filename? (Y)es, (N)o ", savename);
+  refresh();
+  temp = getch();
+  }while(temp != 'y');
+  noecho();
+  
+  strcat(savename, ".txt");
+  clear();
+  refresh();
+  return truesave();
+}
+int truesave(){
+  FILE *fp;
+  fp = fopen(savename, "w+");
+  for(int e = 0; e < height; e++){ 
+    for(int f = 0; f < length; f++){
+      fputc(board[e][f],fp);
+    }
+    fputc('\n', fp);
+  }
+  fclose(fp);
+return 0;
 }
