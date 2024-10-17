@@ -1,11 +1,13 @@
 CC := gcc
 CFLAGS := -Wall -g -lncurses
 
-all: test
-	./test
+.PHONY: all
 
-test: cursepaint.o
-	$(CC) $(CFLAGS) -o test cursepaint.o	
+all: cpaint
+	./cpaint
+
+cpaint: cursepaint.o
+	$(CC) $(CFLAGS) -o cpaint cursepaint.o	
 
 cursepaint.o: cursepaint.c cursepaint.h
 	$(CC) $(CFLAGS) -c cursepaint.c

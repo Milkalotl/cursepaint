@@ -5,6 +5,9 @@
 
 #include "cursepaint.h"
 
+float version = 0.06;
+
+
 char savename[64] = "";
 
 int height = 33;
@@ -20,7 +23,6 @@ char temp;
 char print = 'b';
 int panel2temp = 2;
 
-float version = 0.05;
 
 
 
@@ -32,8 +34,10 @@ int brushc = 0;
 int hold = 2;
 
 WINDOW *win; 
-WINDOW *panel;
+WINDOW *panelh;
 WINDOW *panelb;
+WINDOW *panels;
+
 
 int main(){
   
@@ -46,21 +50,14 @@ int main(){
     }
   }
 
-
-  
-
-  mvprintw(7, 85, "CURSE PAINT V%f", version);
-
-
-  
   start_color();
 
   init_pair(2, COLOR_CYAN, COLOR_BLUE);
   
   win = newwin(35,50,9,80);
-  panel = newwin(5,10,9,65);
+  panelh = newwin(5,10,9,65);
   panelb = newwin(27, 10, 17, 65);
-
+  panels = newwin(5, 80, 3, 65);
 
   do{
   ptspanel();
@@ -93,11 +90,15 @@ void ptswin(void){
 }
 
 void ptspanel(void){
-  wborder(panel, '|','|','-','-','+','+','+','+');
+  wborder(panelh, '|','|','-','-','+','+','+','+');
   wborder(panelb, '|','|','-','-','+','+','+','+'); 
+  wborder(panels, '|','|','-','-','+','+','+','+');
 
-  mvwprintw(panel, 1,2, "%c || %c", print, brushes[hold]);
-  mvwprintw(panel, 3,2, "spa: %d", spacing);
+  mvwprintw(panels, 2, 30, "CURSE PAINT V%f", version);
+  
+
+  mvwprintw(panelh, 1,2, "%c || %c", print, brushes[hold]);
+  mvwprintw(panelh, 3,2, "spa: %d", spacing);
   
   for(int e = 0; e <= brushnum; e++){
     if(e%2 == 0) {mvwaddch(panelb, e+2, 2, brushes[e]);}
@@ -108,9 +109,10 @@ void ptspanel(void){
   if(brushc %2 == 0){mvwaddch(panelb, brushc+2, 4, '<');}
   else{mvwaddch(panelb, brushc+1, 5, '>');}
   panel2temp = brushc+2;
-  
+ 
+  wrefresh(panels);
   wrefresh(panelb);
-  wrefresh(panel);
+  wrefresh(panelh);
 }
 
 
@@ -142,6 +144,7 @@ char inputmove(void){
 
     case '+': savefunc(); break;
     case 'q': quitfunc(); break;
+    case 'Q': endwin(); exit(0);
   }
   if(dir >= '0' && dir <= '9'){
     dir -= '0';
@@ -161,13 +164,14 @@ char inputmove(void){
 }
 
 void inputtext(void){
-  mvprintw(6,80, "TEXT MODE");
- int storage = 0;
+  mvwprintw(panels,1,1, "TEXT MODE");
+  wrefresh(panels);
+  int storage = 0;
 
   while(1){
     storage = getch();
-    if (storage == '\n'){return;}
-    if (storage == KEY_LEFT){
+    if (storage == '\n'){break;}
+    if (storage == KEY_BACKSPACE){
       posx-=spacing;
       mvwaddch(win, posy, posx, ' ');
       board[posy-1][posx-1] = ' ';  
@@ -179,7 +183,7 @@ void inputtext(void){
     }  
     wrefresh(win);
   }
-  clear();
+  wclear(panels);
   refresh();
 
 }
@@ -202,9 +206,9 @@ void quitfunc(){
 mvprintw(0,0,"would you like to save this image ? (Y)es, (N)o, (R)eturn");
   temp = getch();
 if(temp != 'y' && temp != 'n'){clear(); refresh(); return;}
-if(temp == 'y'){savefunc(); }  
+if(temp == 'y'){savefunc();}  
   delwin(panelb);
-  delwin(panel);
+  delwin(panelh);
   delwin(win);
 
   getch();
@@ -214,11 +218,7 @@ if(temp == 'y'){savefunc(); }
 
 
 int savefunc(void){
-  
-
   echo();
-  
-
   if (strcmp(savename, "")!=0){
   mvprintw(0,0,"Do you want to give a new filename? (Y)es, (N)o: ");
   if(getch() != 'y'){return truesave();}
@@ -239,6 +239,8 @@ int savefunc(void){
   refresh();
   return truesave();
 }
+
+
 int truesave(){
   FILE *fp;
   fp = fopen(savename, "w+");
