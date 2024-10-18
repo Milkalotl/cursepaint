@@ -1,0 +1,3 @@
+a.t http://www.ascii-art.de/info/artists/exhibits.shtml
+
+b'ger https://svzanten.home.xs4all.nl/ascii/index.html
