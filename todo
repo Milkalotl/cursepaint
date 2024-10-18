@@ -1,0 +1,6 @@
+TODO:
+
+- add opening files feature
+- add menu -> new file, open file, view file
+- specify size of canvas (malloc oooooo)
+- Tools (fill bucket, square tool, reset all, clear line tool)

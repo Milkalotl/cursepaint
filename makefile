@@ -6,8 +6,10 @@ CFLAGS := -Wall -g -lncurses
 all: cpaint
 	./cpaint
 
-cpaint: cursepaint.o
-	$(CC) $(CFLAGS) -o cpaint cursepaint.o	
+cpaint: cursepaint.o fileio.o
+	$(CC) $(CFLAGS) -o cpaint cursepaint.o fileio.o
 
 cursepaint.o: cursepaint.c cursepaint.h
 	$(CC) $(CFLAGS) -c cursepaint.c
+fileio.o: fileio.c fileio.h
+	$(CC) $(CFLAGS) -c fileio.c

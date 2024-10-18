@@ -3,16 +3,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+#include "fileio.h"
 #include "cursepaint.h"
 
-float version = 0.06;
+float version = 0.07;
 
 
-char savename[64] = "";
 
 int height = 33;
-int length = 48;
-char board[33][48];
+int length = 49;
+char board[33][49];
 int posx = 12;
 int posy = 12;
 
@@ -26,9 +27,9 @@ int panel2temp = 2;
 
 
 
-int brushnum = 23;
+int brushnum = 25;
 char brushes[] = { 
-  'b', 'E', '+',  '#' ,'/', '\\', '(', ')', '-', '|', '_', '.', '*', 'o', '"', '$', '@','V', 'A', '%', 'w','W','H', 'y'
+  'b', 'E', '+',  '#' ,'/', '\\', '(', ')', '<', '>', 'V', 'A', '-', '|', '_', '=','.', '*', 'o',  '$', '@', '%', 'w','W','H', 'y'
 };
 int brushc = 0;
 int hold = 2;
@@ -54,9 +55,9 @@ int main(){
 
   init_pair(2, COLOR_CYAN, COLOR_BLUE);
   
-  win = newwin(35,50,9,80);
+  win = newwin(height+2,length+2,9,80);
   panelh = newwin(5,10,9,65);
-  panelb = newwin(27, 10, 17, 65);
+  panelb = newwin(4+brushnum, 10, 15, 65);
   panels = newwin(5, 80, 3, 65);
 
   do{
@@ -121,15 +122,18 @@ void ptspanel(void){
 char inputmove(void){
   int dir = getch();
   switch(dir){
-    case 'w': posy--; break;
-    case 's': posy++; break;
-    case 'd': posx+=spacing; break;
-    case 'a': posx-=spacing; break;
+  
+
+
     case ' ':
-    if(print != 'b' && print != 'E'){hold = brushc; brushc = 0;}else{brushc = hold;} break;
+    if(print != 'b'){if(print != 'E'){hold = brushc;} brushc = 0;}else{brushc = hold;} break;
     case 'e':
     (print != 'E')? (brushc = 1):(brushc = 0); break; 
    
+    case 'w': posy--; if(posy < 1){posy = 1;} break;
+    case 's': posy++; if(posy > height){posy = height;} break;
+    case 'd': posx+=spacing; if(posx > length-1){posx = length - 1;} break;
+    case 'a': posx-=spacing; if(posx < 2){posx = 2;} break;
 
     case 'j': brushc --; break;
     case 'k': brushc ++; break;
@@ -138,8 +142,13 @@ char inputmove(void){
     
     case '.': spacing ++; if(spacing>8){spacing = 8;} break;
     case ',': spacing --; if(spacing<1){spacing = 1;} break;
+    
+    case 'r': 
+      posy = height/2;
+      posx = length/2;
+      wmove(win, posy, posx);
+      break;
 
-              
     case 't': inputtext(); break;
 
     case '+': savefunc(); break;
@@ -162,6 +171,9 @@ char inputmove(void){
   
   return dir;
 }
+
+
+
 
 void inputtext(void){
   mvwprintw(panels,1,1, "TEXT MODE");
@@ -188,7 +200,6 @@ void inputtext(void){
 
 }
 
-
 void quitfunc(){
   clear();
   printw("Are you sure? (Y)es, (N)o.");
@@ -207,49 +218,11 @@ mvprintw(0,0,"would you like to save this image ? (Y)es, (N)o, (R)eturn");
   temp = getch();
 if(temp != 'y' && temp != 'n'){clear(); refresh(); return;}
 if(temp == 'y'){savefunc();}  
+  
   delwin(panelb);
   delwin(panelh);
   delwin(win);
-
-  getch();
- endwin();
-  exit(0);
-}
-
-
-int savefunc(void){
-  echo();
-  if (strcmp(savename, "")!=0){
-  mvprintw(0,0,"Do you want to give a new filename? (Y)es, (N)o: ");
-  if(getch() != 'y'){return truesave();}
-  }
-  do{
-  clear(); refresh();
-  mvprintw(0,0,"Please state the save name: ");
-  refresh();
-  getstr(savename);
-  mvprintw(2,0, "Is %s.txt your desired filename? (Y)es, (N)o ", savename);
-  refresh();
-  temp = getch();
-  }while(temp != 'y');
-  noecho();
   
-  strcat(savename, ".txt");
-  clear();
-  refresh();
-  return truesave();
-}
-
-
-int truesave(){
-  FILE *fp;
-  fp = fopen(savename, "w+");
-  for(int e = 0; e < height; e++){ 
-    for(int f = 0; f < length; f++){
-      fputc(board[e][f],fp);
-    }
-    fputc('\n', fp);
-  }
-  fclose(fp);
-return 0;
+  endwin();
+  exit(0);
 }
