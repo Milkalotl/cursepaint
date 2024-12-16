@@ -24,6 +24,7 @@ char temp;
 char print = 'b';
 int panel2temp = 2;
 
+int 
 
 
 
@@ -38,7 +39,8 @@ WINDOW *win;
 WINDOW *panelh;
 WINDOW *panelb;
 WINDOW *panels;
-
+WINDOW *panelt;
+WINDOW *panelc;
 
 int main(){
   
@@ -59,6 +61,8 @@ int main(){
   panelh = newwin(5,10,9,65);
   panelb = newwin(4+brushnum, 10, 15, 65);
   panels = newwin(5, 80, 3, 65);
+  panelt = newwin(29, 10, 9, 135);
+  panelc = newwin(5,10, 39, 135);
 
   do{
   ptspanel();
@@ -94,8 +98,13 @@ void ptspanel(void){
   wborder(panelh, '|','|','-','-','+','+','+','+');
   wborder(panelb, '|','|','-','-','+','+','+','+'); 
   wborder(panels, '|','|','-','-','+','+','+','+');
+  wborder(panelc, '|','|','-','-','+','+','+','+');
+  wborder(panelt, '|','|','-','-','+','+','+','+');
+
+
 
   mvwprintw(panels, 2, 30, "CURSE PAINT V%f", version);
+  mvwprintw(panels, 3, 40, "%s", savename);
   
 
   mvwprintw(panelh, 1,2, "%c || %c", print, brushes[hold]);
@@ -114,6 +123,9 @@ void ptspanel(void){
   wrefresh(panels);
   wrefresh(panelb);
   wrefresh(panelh);
+  wrefresh(panelt);
+  wrefresh(panelc);
+
 }
 
 
@@ -150,8 +162,10 @@ char inputmove(void){
       break;
 
     case 't': inputtext(); break;
+    case 'b': combrush(); break;
 
     case '+': savefunc(); break;
+    case 'o': askopen(); break;
     case 'q': quitfunc(); break;
     case 'Q': endwin(); exit(0);
   }
@@ -172,7 +186,23 @@ char inputmove(void){
   return dir;
 }
 
-
+int combrush(void){
+  mvwprintw(panels,1,1, "COMMAND MODE");
+  wrefresh(panels);
+  int comnum;
+  echo();
+  mvwscanw(panelc,2,2, "%u", &comnum);
+  noecho();
+  comnum+=2;
+  if(comnum <= brushnum){
+  brushc = comnum;
+  }
+  wclear(panels);
+  wclear(panelc);
+  wrefresh(panelc);
+  wrefresh(panels);
+  return 0;
+}
 
 
 void inputtext(void){
@@ -196,9 +226,34 @@ void inputtext(void){
     wrefresh(win);
   }
   wclear(panels);
-  refresh();
+  wrefresh(panels);
 
 }
+
+void askopen(void){
+  int sure; int line;
+  char thelineinquestion[128];
+  clear();
+  printw("What file do you want to open? : ");
+  line = showdir("./images/");
+  echo();
+  mvgetstr(line+1, 0, thelineinquestion);
+  noecho();
+  sure = openfunc(thelineinquestion);
+  if(sure == 1){printw("Sorry, that file doesn't exist");return;}
+  for(int e = 0; e < height; e++){
+    for(int f = 0; f < length; f++){
+      mvwaddch(win, e, f+1, board[e][f]);
+    }
+  }
+  clear();
+  refresh();
+  wrefresh(win);
+  return;
+}
+
+
+
 
 void quitfunc(){
   clear();
@@ -207,10 +262,10 @@ void quitfunc(){
   if(temp != 'y'){/*printw(" || %c ||", temp);*/ clear(); refresh(); return;}
   clear();
   refresh();  
-  
-  for(int e = 0; e<height; e++){
-    for(int f = 0; f<length; f++){
-      mvwaddch(stdscr,e+1, f, board[e][f]);
+   
+  for(int e = 1; e<height-1; e++){
+    for(int f = 1; f<length-1; f++){
+      mvwaddch(stdscr,e, f, board[e][f]);
       if(f == length-1){addch('!');}
     }
   }
