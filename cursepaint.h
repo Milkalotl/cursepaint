@@ -2,8 +2,8 @@
 #define CURSEPAINT_H
 extern char temp;
 extern int height;
-extern int length;
-extern char board[33][49];
+extern int width;
+extern char * board;
 
 
 void  ptswin(void);

@@ -12,8 +12,8 @@ float version = 0.07;
 
 
 int height = 33;
-int length = 49;
-char board[33][49];
+int width = 49;
+char * board;
 int posx = 12;
 int posy = 12;
 
@@ -23,10 +23,6 @@ int spacing = 2;
 char temp;
 char print = 'b';
 int panel2temp = 2;
-
-int 
-
-
 
 int brushnum = 25;
 char brushes[] = { 
@@ -43,32 +39,49 @@ WINDOW *panelt;
 WINDOW *panelc;
 
 int main(){
-  
+  int mhold;
+  do{
+  printf("\nPlease specify the desired width and height for the canvas\nHeight: ");
+  scanf("%d", &height);
+  printf("\nWidth: ");
+  scanf("%d", &width);
+  printf("\nAre you sure of your choices? Height: %d / Width: %d\n Type -1 for changes, type 1 to start CURSEPAINT\n: ", height, width);
+  scanf("%d", &mhold);
+  if(width >= 1000 || height >= 1000 || width <= 0 || height <= 0){ printf("\nSorry, please try again. One of your inputted values caused an error.\n "); mhold = -1;}
+
+  }while(mhold == -1);
+
+  board = (char *)malloc(height*width * sizeof(char));
+
   initscr();
   noecho();
 
   for(int e = 0; e<height; e++){
-    for(int f = 0; f<length; f++){
-      board[e][f] = ' ';
+    for(int f = 0; f<width; f++){
+      *(board + e*height + f) = ' ';
     }
   }
 
   start_color();
 
   init_pair(2, COLOR_CYAN, COLOR_BLUE);
-  
-  win = newwin(height+2,length+2,9,80);
+// fix these  
+  win = newwin(height+2,width+2,9,80);
   panelh = newwin(5,10,9,65);
   panelb = newwin(4+brushnum, 10, 15, 65);
   panels = newwin(5, 80, 3, 65);
   panelt = newwin(29, 10, 9, 135);
   panelc = newwin(5,10, 39, 135);
+// fix these 
 
   do{
   ptspanel();
   ptswin();
   temp = inputmove(); 
   }while(1);
+
+  free(board);
+
   return 0;
 }
 
@@ -81,11 +94,11 @@ void ptswin(void){
     attron(COLOR_PAIR(2));
     mvwaddch(win,posy,posx,print); 
     attroff(COLOR_PAIR(2)); 
-    board[posy-1][posx-1] = print;  
+    *(board + height * (posy-1) + posx-1) = print;  
   }else if(print == 'E'){
       
     mvwaddch(win,posy,posx,' '); 
-    board[posy-1][posx-1] = ' ';  
+    *(board + height * (posy-1) + posx-1) = ' ';  
 
 }else{
     wmove(win, posy, posx);
@@ -144,7 +157,7 @@ char inputmove(void){
    
     case 'w': posy--; if(posy < 1){posy = 1;} break;
     case 's': posy++; if(posy > height){posy = height;} break;
-    case 'd': posx+=spacing; if(posx > length-1){posx = length - 1;} break;
+    case 'd': posx+=spacing; if(posx > width-1){posx = width - 1;} break;
     case 'a': posx-=spacing; if(posx < 2){posx = 2;} break;
 
     case 'j': brushc --; break;
@@ -157,7 +170,7 @@ char inputmove(void){
     
     case 'r': 
       posy = height/2;
-      posx = length/2;
+      posx = width/2;
       wmove(win, posy, posx);
       break;
 
@@ -216,11 +229,11 @@ void inputtext(void){
     if (storage == KEY_BACKSPACE){
       posx-=spacing;
       mvwaddch(win, posy, posx, ' ');
-      board[posy-1][posx-1] = ' ';  
+  *(board + height * (posy-1) + posx-1) = ' ';  
    
     }else{
       mvwaddch(win, posy, posx, storage);
-      board[posy-1][posx-1] = storage;  
+      *(board + height * (posy-1) + posx-1) = storage;  
       posx+=spacing;
     }  
     wrefresh(win);
@@ -242,8 +255,8 @@ void askopen(void){
   sure = openfunc(thelineinquestion);
   if(sure == 1){printw("Sorry, that file doesn't exist");return;}
   for(int e = 0; e < height; e++){
-    for(int f = 0; f < length; f++){
-      mvwaddch(win, e, f+1, board[e][f]);
+    for(int f = 0; f < width; f++){
+      mvwaddch(win, e, f+1, *(board + e*height + f));
     }
   }
   clear();
@@ -264,9 +277,9 @@ void quitfunc(){
   refresh();  
    
   for(int e = 1; e<height-1; e++){
-    for(int f = 1; f<length-1; f++){
-      mvwaddch(stdscr,e, f, board[e][f]);
-      if(f == length-1){addch('!');}
+    for(int f = 1; f<width-1; f++){
+      mvwaddch(stdscr,e, f, *(board + e*height + f));
+      if(f == width-1){addch('!');}
     }
   }
 mvprintw(0,0,"would you like to save this image ? (Y)es, (N)o, (R)eturn");

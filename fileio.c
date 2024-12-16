@@ -52,8 +52,8 @@ int truesave(){
   FILE *fp;
   fp = fopen(curdir, "w");
   for(int e = 0; e < height; e++){ 
-    for(int f = 0; f < length; f++){
-      fputc(board[e][f],fp);
+    for(int f = 0; f < width; f++){
+      fputc(*(board + e*height + width),fp);
     }
     fputc(10, fp);
   }
@@ -73,10 +73,10 @@ int openfunc(char* filename){
   
 
   for(int e = 0; e < height; e++){ 
-    for(int f = 0; f < length; f++){
+    for(int f = 0; f < width; f++){
       if((fptemp = fgetc(fp)) != EOF){
         if (fptemp == '\n'){break;}
-        board[e][f] = fptemp;
+        *(board + e*height + width) = fptemp;
       }
     }
   }
