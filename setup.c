@@ -4,10 +4,10 @@
 #include "cursepaint.h"
 
 int setup(){
-  int mhold;
+ // int mhold;
   WINDOW * setupwin;  
-  int holdwidth;
-  int holdheight;
+//  int holdwidth;
+//  int holdheight;
   setupwin = newwin(LINES/2, COLS/2, LINES/4, COLS/4);
   wborder(setupwin, '|','|','-','-','+','+','+','+'); 
   wrefresh(setupwin);
@@ -32,9 +32,6 @@ int setup(){
   */
   height = LINES/2;
   width = COLS/2;
-
-  getch();
-  getch();
 
   board = (char *)malloc(height*width * sizeof(char));
   return 0;
