@@ -2,11 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 #include "fileio.h"
 #include "cursepaint.h"
 #include "setup.h"
+
+
+
+
 
 float version = 0.09;
 
@@ -40,6 +45,17 @@ WINDOW *panelt;
 WINDOW *panelc;
 
 
+void clear_canvas(bool is_window_active){ 
+  
+  for(int e = 0; e<height; e++) 
+    for(int f = 0; f<width; f++) {
+      *(board + e*height + f) = ' ';
+      if(is_window_active == TRUE) mvwaddch(win,posy,posx,' '); 
+    }
+
+
+}
+
 void kill_quit(int condition){
   endwin();
   free(board);
@@ -55,24 +71,35 @@ int main(){
   
   setup(); //from setup.c
   
-  for(int e = 0; e<height; e++)
-    for(int f = 0; f<width; f++)
-      *(board + e*height + f) = ' ';
-    
-  
+
+  clear_canvas(FALSE); 
 
   start_color();
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_CYAN, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(7, COLOR_WHITE, COLOR_BLACK);
+    init_pair(11, COLOR_WHITE, COLOR_WHITE);
+    init_pair(12, COLOR_RED, COLOR_RED);
+    init_pair(13, COLOR_BLUE, COLOR_BLUE);
+    init_pair(14, COLOR_GREEN, COLOR_GREEN);
 
-  init_pair(2, COLOR_CYAN, COLOR_BLUE);
-// fix these  
+
   win = newwin(height+2,width+2,height/2,width/2); //canvas
   panels = newwin(5, width+30/*10+10+6+4*/, height/2-6, width/2-14); //top header, shows filename and stats
   panelh = newwin(5,10,height/2,width/2-14); // shows basic data - brush panel info
   panelb = newwin(4+brushnum, 10, height/2+5, width/2-14); // brushes
   panelt = newwin(29, 10, height/2, 3*width/2 + 6); // tools
   panelc = newwin(5,10, 3*height/2 -9, 3*width/2 + 6); // custom
-// fix these 
+
+  // fix these 
+  
+
   do{
+  border_print_once();
   ptspanel();
   ptswin();
   temp = inputmove(); 
@@ -84,15 +111,36 @@ int main(){
   return 0;
 }
 
+void border_print_once(void){
+  wattron(win, COLOR_PAIR(6)); 
+    wborder(win, '[',']','-','-','*','*','L','/');
+    wrefresh(win);
+  wattron(panelh, COLOR_PAIR(2));
+    wborder(panelh, '|','|','-','-','+','+','+','+');
+    wrefresh(panelh);
+  wattron(panelb, COLOR_PAIR(3));
+    wborder(panelb, '|','|','-','-','+','+','+','+'); 
+    wrefresh(panelb);
+  wattron(panels, COLOR_PAIR(4)); 
+    wborder(panels, '|','|','-','-','+','+','+','+');
+    wrefresh(panels);
+  wattron(panelc, COLOR_PAIR(6)); 
+    wborder(panelc, '|','|','-','-','+','+','+','+');
+    wrefresh(panelc);
+  wattron(panelt, COLOR_PAIR(7)); 
+    wborder(panelt, '|','|','-','-','+','+','+','+'); 
+    wrefresh(panelt);
+  standend();
+}
+
 void ptswin(void){
-  wborder(win, '[',']','-','-','*','*','L','/');
   
   
 
   if(print != 'b' && print != 'E'){ 
-    attron(COLOR_PAIR(2));
+   // wattron(win, COLOR_PAIR(13));
     mvwaddch(win,posy,posx,print); 
-    attroff(COLOR_PAIR(2)); 
+   // wattroff(win, COLOR_PAIR(13)); 
     *(board + height * (posy-1) + posx-1) = print;  
   }else if(print == 'E'){
       
@@ -107,13 +155,6 @@ void ptswin(void){
 }
 
 void ptspanel(void){
-  wborder(panelh, '|','|','-','-','+','+','+','+');
-  wborder(panelb, '|','|','-','-','+','+','+','+'); 
-  wborder(panels, '|','|','-','-','+','+','+','+');
-  wborder(panelc, '|','|','-','-','+','+','+','+');
-  wborder(panelt, '|','|','-','-','+','+','+','+');
-
-
 
   mvwprintw(panels, 2, (width+30)/2-9, "CURSE PAINT V%f", version);
   mvwprintw(panels, 3, (width+30)/2-9, "%s", savename);
@@ -172,7 +213,7 @@ char inputmove(void){
       posx = width/2;
       wmove(win, posy, posx);
       break;
-
+    case 'Y': clear_canvas(TRUE); break;
     case 't': inputtext(); break;
     case 'b': combrush(); break;
 
