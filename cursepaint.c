@@ -87,11 +87,11 @@ int main(){
   panelh = newwin(5,10,height/2,width/2-14); // shows basic data - brush panel info
   panelb = newwin(4+brushnum, 10, height/2+5, width/2-14); // brushes
   panelt = newwin(29, 10, height/2, 3*width/2 + 6); // tools
-  panelc = newwin(5,10, 3*height/2 -9, 3*width/2 + 6); // custom
+  panelc = newwin(5,10, height/2 + 29, 3*width/2 + 6); // custom
 
   // fix these 
   
-
+  win_attrons();
   do{
   border_print_once();
   ptspanel();
@@ -104,27 +104,22 @@ int main(){
 
   return 0;
 }
-
-void border_print_once(void){
+void win_attrons(void){
   wattron(win, COLOR_PAIR(6)); 
-    wborder(win, '[',']','-','-','*','*','L','/');
-    wrefresh(win);
   wattron(panelh, COLOR_PAIR(2));
-    wborder(panelh, '|','|','-','-','+','+','+','+');
-    wrefresh(panelh);
   wattron(panelb, COLOR_PAIR(3));
-    wborder(panelb, '|','|','-','-','+','+','+','+'); 
-    wrefresh(panelb);
   wattron(panels, COLOR_PAIR(4)); 
-    wborder(panels, '|','|','-','-','+','+','+','+');
-    wrefresh(panels);
   wattron(panelc, COLOR_PAIR(6)); 
-    wborder(panelc, '|','|','-','-','+','+','+','+');
-    wrefresh(panelc);
   wattron(panelt, COLOR_PAIR(7)); 
+
+}
+void border_print_once(void){
+    wborder(win, '[',']','-','-','*','*','L','/');
+    wborder(panelh, '|','|','-','-','+','+','+','+');
+    wborder(panelb, '|','|','-','-','+','+','+','+'); 
+    wborder(panels, '|','|','-','-','+','+','+','+');
+    wborder(panelc, '|','|','-','-','+','+','+','+');
     wborder(panelt, '|','|','-','-','+','+','+','+'); 
-    wrefresh(panelt);
-  standend();
 }
 
 void brush_functionality(void){
@@ -245,8 +240,8 @@ int combrush(void){
   if(comnum <= brushnum){
   ucursor[2] = comnum;
   }
-  wclear(panels);
-  wclear(panelc);
+  werase(panels);
+  werase(panelc);
   wrefresh(panelc);
   wrefresh(panels);
   return 0;
@@ -273,7 +268,7 @@ void inputtext(void){
     }  
     wrefresh(win);
   }
-  wclear(panels);
+  werase(panels);
   wrefresh(panels);
 
 }
@@ -281,7 +276,7 @@ void inputtext(void){
 void askopen(void){
   int sure; int line;
   char thelineinquestion[128];
-  clear();
+  erase();
   printw("What file do you want to open? : ");
   line = showdir("./images/");
   echo();
@@ -294,7 +289,7 @@ void askopen(void){
       mvwaddch(win, e, f+1, *(board + e*height + f));
     }
   }
-  clear();
+  erase();
   refresh();
   wrefresh(win);
   return;
@@ -304,11 +299,11 @@ void askopen(void){
 
 
 void quitfunc(){
-  clear();
+  erase();
   printw("Are you sure? (Y)es, (N)o.");
   temp = getch();
-  if(temp != 'y'){/*printw(" || %c ||", temp);*/ clear(); refresh(); return;}
-  clear();
+  if(temp != 'y'){/*printw(" || %c ||", temp);*/ erase(); refresh(); return;}
+  erase();
   refresh();  
    
   for(int e = 1; e<height-1; e++){
@@ -319,7 +314,7 @@ void quitfunc(){
   }
 mvprintw(0,0,"would you like to save this image ? (Y)es, (N)o, (R)eturn");
   temp = getch();
-if(temp != 'y' && temp != 'n'){clear(); refresh(); return;}
+if(temp != 'y' && temp != 'n'){erase(); refresh(); return;}
 if(temp == 'y'){savefunc();}  
   
   delwin(panelb);

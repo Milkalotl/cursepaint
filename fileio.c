@@ -23,14 +23,18 @@ void candfdir(void){
 }
 
 int savefunc(void){
+  erase(); refresh();
+
+  mvprintw(0,0,"Do you want to save? (Y)es, (N)o");
+  if(getch() != 'y'){ erase(); refresh(); return 1;}
+
   if (strcmp(savename, "NOFILE")!=0){
-  mvprintw(0,0,"Do you want to give a new filename? (Y)es, (N)o: ");
-  temp = getch();
-  if(temp != 'y'){clear(); return truesave();}
+    mvprintw(0,0,"Do you want to give a new filename? (Y)es, (N)o: ");
+    if(getch() != 'y'){erase(); return truesave();}
   }
   echo();
   do{
-  clear(); refresh();
+  erase(); refresh();
   mvprintw(0,0,"Please state the save name: ");
   refresh();
   getstr(savename);
@@ -42,7 +46,7 @@ int savefunc(void){
   
   candfdir(); 
 
-  clear();
+  erase();
   refresh();
   return truesave();
 }
