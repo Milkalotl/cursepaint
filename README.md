@@ -9,14 +9,26 @@ This is a salvaged project I'm returning to, it may be a while before it's fully
 ## Temporary commands: 
  	* wasd: Move cursor
 	* jkui: Change brush
+	* {space}: Holster brush, tap again to unholster
+	* e: swap to eraser, tap again to return to the brush  
 	* {dot} {comma} ( . , ): Change brush gap
- 	* q: quit safely
+
+	* t: text input
+ 	
+	* r: reset brush pos
+		
+	* Y: clear screen
+	* q: quit safely
 	* Q: kill program
 	* +: save
 	* o: open
 
+	
+
 # Upcoming Features
 
 	* Tools: Line tool, Circle tool, Copy Paste, Transform
+	* Color support: With an easily implemented formatting for use with NCurses
+	* Non-Ascii support: With a toggle, as it would be harder to implement with NCurses
 	* More comprehensive UI
 	* Documenation  
