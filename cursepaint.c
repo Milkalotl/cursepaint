@@ -38,21 +38,39 @@ WINDOW *panels;
 WINDOW *panelt;
 WINDOW *panelc;
 
-int main(){
+int setup(){
   int mhold;
-  do{
-  printf("\nPlease specify the desired width and height for the canvas\nHeight: ");
-  scanf("%d", &height);
-  printf("\nWidth: ");
-  scanf("%d", &width);
-  printf("\nAre you sure of your choices? Height: %d / Width: %d\n Type -1 for changes, type 1 to start CURSEPAINT\n: ", height, width);
+  
+  printf("Would you like to:\n - Work with a custom size (-1)\n - Work with adaptive size (1)\n: ");
   scanf("%d", &mhold);
-  if(width >= 1000 || height >= 1000 || width <= 0 || height <= 0){ printf("\nSorry, please try again. One of your inputted values caused an error.\n "); mhold = -1;}
+  /*if(mhold != -1){
+    
 
+  }
+  else*/
+  do{
+    printf("\nPlease specify the desired width and height for the canvas\nHeight: ");
+    scanf("%d", &height);
+    printf("\nWidth: ");
+    scanf("%d", &width);
+    printf("\nAre you sure of your choices? Height: %d / Width: %d\n Type -1 for changes, type 1 to start CURSEPAINT\n: ", height, width);
+    scanf("%d", &mhold);
+    if(width >= 1000 || height >= 1000 || width <= 0 || height <= 0){ printf("\nSorry, please try again. One of your inputted values caused an error.\n "); mhold = -1;}
   }while(mhold == -1);
-
+  
   board = (char *)malloc(height*width * sizeof(char));
 
+}
+
+void kill_quit(int condition){
+  endwin();
+  free(board);
+  exit(condition);
+}
+
+int main(){
+
+  setup();
   initscr();
   noecho();
 
@@ -73,13 +91,13 @@ int main(){
   panelt = newwin(29, 10, 9, 135);
   panelc = newwin(5,10, 39, 135);
 // fix these 
-
   do{
   ptspanel();
   ptswin();
   temp = inputmove(); 
   }while(1);
 
+  endwin();
   free(board);
 
   return 0;
@@ -180,7 +198,7 @@ char inputmove(void){
     case '+': savefunc(); break;
     case 'o': askopen(); break;
     case 'q': quitfunc(); break;
-    case 'Q': endwin(); exit(0);
+    case 'Q': kill_quit(0); break; 
   }
   if(dir >= '0' && dir <= '9'){
     dir -= '0';
@@ -291,6 +309,5 @@ if(temp == 'y'){savefunc();}
   delwin(panelh);
   delwin(win);
   
-  endwin();
-  exit(0);
+  kill_quit(0);
 }
