@@ -39,41 +39,7 @@ WINDOW *panels;
 WINDOW *panelt;
 WINDOW *panelc;
 
-<<<<<<< HEAD
-int setup(){
-  int mhold;
-  
-  printf("Would you like to:\n - Work with a custom size (-1)\n - Work with adaptive size (1)\n: ");
-  scanf("%d", &mhold);
-  /*if(mhold != -1){
-    
 
-  }
-  else*/
-  do{
-    printf("\nPlease specify the desired width and height for the canvas\nHeight: ");
-    scanf("%d", &height);
-    printf("\nWidth: ");
-    scanf("%d", &width);
-    printf("\nAre you sure of your choices? Height: %d / Width: %d\n Type -1 for changes, type 1 to start CURSEPAINT\n: ", height, width);
-    scanf("%d", &mhold);
-    if(width >= 1000 || height >= 1000 || width <= 0 || height <= 0){ printf("\nSorry, please try again. One of your inputted values caused an error.\n "); mhold = -1;}
-  }while(mhold == -1);
-  
-  board = (char *)malloc(height*width * sizeof(char));
-
-}
-
-void kill_quit(int condition){
-  endwin();
-  free(board);
-  exit(condition);
-}
-
-int main(){
-
-  setup();
-=======
 void kill_quit(int condition){
   endwin();
   free(board);
@@ -83,10 +49,7 @@ void kill_quit(int condition){
 int main(){
   
   printf("This application will start N-Curses. Please do not kill the process with ctrl-c or ctrl-d unless something has gone seriously wrong. There will be commands associated to q and Q if one wishes to quit safely. If you wish to quit right now, press q. Otherwise, welcome to CURSEPAINT\n: ");
-  if(getchar() == 'q')kill_quit(0);
-
-  
->>>>>>> refs/remotes/milkalotl/master
+  if(getchar() == 'q')kill_quit(0); 
   initscr();
   noecho();
   
