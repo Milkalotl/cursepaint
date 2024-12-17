@@ -6,8 +6,9 @@
 
 #include "fileio.h"
 #include "cursepaint.h"
+#include "setup.h"
 
-float version = 0.07;
+float version = 0.09;
 
 
 
@@ -38,6 +39,7 @@ WINDOW *panels;
 WINDOW *panelt;
 WINDOW *panelc;
 
+<<<<<<< HEAD
 int setup(){
   int mhold;
   
@@ -71,25 +73,41 @@ void kill_quit(int condition){
 int main(){
 
   setup();
+=======
+void kill_quit(int condition){
+  endwin();
+  free(board);
+  exit(condition);
+}
+
+int main(){
+  
+  printf("This application will start N-Curses. Please do not kill the process with ctrl-c or ctrl-d unless something has gone seriously wrong. There will be commands associated to q and Q if one wishes to quit safely. If you wish to quit right now, press q. Otherwise, welcome to CURSEPAINT\n: ");
+  if(getchar() == 'q')kill_quit(0);
+
+  
+>>>>>>> refs/remotes/milkalotl/master
   initscr();
   noecho();
-
-  for(int e = 0; e<height; e++){
-    for(int f = 0; f<width; f++){
+  
+  setup(); //from setup.c
+  
+  for(int e = 0; e<height; e++)
+    for(int f = 0; f<width; f++)
       *(board + e*height + f) = ' ';
-    }
-  }
+    
+  
 
   start_color();
 
   init_pair(2, COLOR_CYAN, COLOR_BLUE);
 // fix these  
-  win = newwin(height+2,width+2,9,80);
-  panelh = newwin(5,10,9,65);
-  panelb = newwin(4+brushnum, 10, 15, 65);
-  panels = newwin(5, 80, 3, 65);
-  panelt = newwin(29, 10, 9, 135);
-  panelc = newwin(5,10, 39, 135);
+  win = newwin(height+2,width+2,height/2,width/2); //canvas
+  panels = newwin(5, width+30/*10+10+6+4*/, height/2-6, width/2-14); //top header, shows filename and stats
+  panelh = newwin(5,10,height/2,width/2-14); // shows basic data - brush panel info
+  panelb = newwin(4+brushnum, 10, height/2+5, width/2-14); // brushes
+  panelt = newwin(29, 10, height/2, 3*width/2 + 6); // tools
+  panelc = newwin(5,10, 3*height/2 -9, 3*width/2 + 6); // custom
 // fix these 
   do{
   ptspanel();
@@ -134,8 +152,8 @@ void ptspanel(void){
 
 
 
-  mvwprintw(panels, 2, 30, "CURSE PAINT V%f", version);
-  mvwprintw(panels, 3, 40, "%s", savename);
+  mvwprintw(panels, 2, (width+30)/2-9, "CURSE PAINT V%f", version);
+  mvwprintw(panels, 3, (width+30)/2-9, "%s", savename);
   
 
   mvwprintw(panelh, 1,2, "%c || %c", print, brushes[hold]);

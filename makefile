@@ -6,14 +6,20 @@ CFLAGS := -Wall -g -lncurses
 all: cpaint
 	./cpaint
 
-cpaint: cursepaint.o fileio.o
-	$(CC) $(CFLAGS) -o cpaint cursepaint.o fileio.o
+cpaint: cursepaint.o fileio.o setup.o
+	$(CC) -o cpaint setup.o cursepaint.o fileio.o $(CFLAGS)
 
 cursepaint.o: cursepaint.c cursepaint.h
-	$(CC) $(CFLAGS) -c cursepaint.c
+	$(CC)  -c cursepaint.c $(CFLAGS)
 fileio.o: fileio.c fileio.h
-	$(CC) $(CFLAGS) -c fileio.c
+	$(CC)  -c fileio.c $(CFLAGS)
+
+setup.o: setup.c setup.h
+	$(CC)  -c setup.c $(CFLAGS)
 
 
-boobies.o: boobies.c
-	echo boobies
+
+clean:
+	rm *.o
+	rm cpaint
+	echo all done!!
