@@ -51,12 +51,10 @@ int savefunc(void){
 int truesave(){
   FILE *fp;
   fp = fopen(curdir, "w");
-  for(int e = 0; e < height; e++){ 
-    for(int f = 0; f < width; f++){
-      fputc(*(board + e*height + width),fp);
-    }
+  for(int e = 0; e < height; e++) 
+    for(int f = 0; f < width; f++)
+      fputc(*(board + e*height + f),fp); 
     fputc(10, fp);
-  }
   fclose(fp);
 return 0;
 }
@@ -67,23 +65,16 @@ int openfunc(char* filename){
   candfdir();
   
   fp = fopen(curdir, "r");
-  if(fp == NULL){
-    return 1;
-  }
-  
+  if(fp == NULL) return 1;
 
-  for(int e = 0; e < height; e++){ 
+  for(int e = 0; e < height; e++) 
     for(int f = 0; f < width; f++){
-      if((fptemp = fgetc(fp)) != EOF){
-        if (fptemp == '\n'){break;}
-        *(board + e*height + width) = fptemp;
+        fptemp = fgetc(fp);
+        if(fptemp == '\n') break;
+        *(board + e*height + f) = fptemp;
       }
-    }
-  }
   fclose(fp);
-  
   strcpy(savename, filename);
-
   return 0;
 }
 

@@ -2,7 +2,7 @@
 
 A small, terminal-based program meant to create ascii-based art. Designed to be used with ncurses aplications and games, and to be a robust application with all necessary tools and features to create any art. 
 
-# Note for those that stumble upon this program
+## Note for those that stumble upon this program
 
 This is a salvaged project I'm returning to, it may be a while before it's fully user friendly. For now, if one wishes to compile, use the "$make" command in the terminal after cloning, and, if it does not work, run "$make clean" and then "$make". 
 
@@ -25,7 +25,7 @@ This is a salvaged project I'm returning to, it may be a while before it's fully
 
 	
 
-# Upcoming Features
+## Upcoming Features
 
 	* Tools: Line tool, Circle tool, Copy Paste, Transform
 	* Color support: With an easily implemented formatting for use with NCurses

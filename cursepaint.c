@@ -10,18 +10,13 @@
 #include "setup.h"
 
 
-
-
-
 float version = 0.09;
-
-
 
 int height = 33;
 int width = 49;
 char * board;
-int posx = 12;
-int posy = 12;
+
+int ucursor[3] = {1,1,0};
 
 int spacing = 2;
 
@@ -34,7 +29,6 @@ int brushnum = 25;
 char brushes[] = { 
   'b', 'E', '+',  '#' ,'/', '\\', '(', ')', '<', '>', 'V', 'A', '-', '|', '_', '=','.', '*', 'o',  '$', '@', '%', 'w','W','H', 'y'
 };
-int brushc = 0;
 int hold = 2;
 
 WINDOW *win; 
@@ -50,7 +44,7 @@ void clear_canvas(bool is_window_active){
   for(int e = 0; e<height; e++) 
     for(int f = 0; f<width; f++) {
       *(board + e*height + f) = ' ';
-      if(is_window_active == TRUE) mvwaddch(win,e,f,' '); 
+      if(is_window_active == TRUE) mvwaddch(win,e+1,f+1,' '); 
     }
 
 
@@ -64,7 +58,7 @@ void kill_quit(int condition){
 
 int main(){
   
-  printf("This application will start N-Curses. Please do not kill the process with ctrl-c or ctrl-d unless something has gone seriously wrong. There will be commands associated to q and Q if one wishes to quit safely. If you wish to quit right now, press q. Otherwise, welcome to CURSEPAINT\n: ");
+  printf("This application will start N-Curses. Please do not kill the process with ctrl-c or ctrl-d unless something has gone seriously wrong. There will be commands associated to q and Q if one wishes to quit safely. If you wish to quit right now, press q. For a better experience, resize your terminal window to the largest possible size. Welcome to CURSEPAINT\n: ");
   if(getchar() == 'q')kill_quit(0); 
   initscr();
   noecho();
@@ -101,7 +95,7 @@ int main(){
   do{
   border_print_once();
   ptspanel();
-  ptswin();
+  brush_functionality();
   temp = inputmove(); 
   }while(1);
 
@@ -133,22 +127,22 @@ void border_print_once(void){
   standend();
 }
 
-void ptswin(void){
+void brush_functionality(void){
   
   
 
   if(print != 'b' && print != 'E'){ 
    // wattron(win, COLOR_PAIR(13));
-    mvwaddch(win,posy,posx,print); 
+    mvwaddch(win,ucursor[0],ucursor[1],print); 
    // wattroff(win, COLOR_PAIR(13)); 
-    *(board + height * (posy-1) + posx-1) = print;  
+    *(board + height * (ucursor[0]-1) + ucursor[1]-1) = print;  
   }else if(print == 'E'){
       
-    mvwaddch(win,posy,posx,' '); 
-    *(board + height * (posy-1) + posx-1) = ' ';  
+    mvwaddch(win,ucursor[0],ucursor[1],' '); 
+    *(board + height * (ucursor[0]-1) + ucursor[1]-1) = ' ';  
 
 }else{
-    wmove(win, posy, posx);
+    wmove(win, ucursor[0], ucursor[1]);
 }
   wrefresh(win);
 
@@ -169,9 +163,9 @@ void ptspanel(void){
   }
   mvwaddch(panelb, panel2temp, 4, ' ');mvwaddch(panelb, panel2temp-1, 5, ' ');
 
-  if(brushc %2 == 0){mvwaddch(panelb, brushc+2, 4, '<');}
-  else{mvwaddch(panelb, brushc+1, 5, '>');}
-  panel2temp = brushc+2;
+  if(ucursor[2] %2 == 0){mvwaddch(panelb, ucursor[2]+2, 4, '<');}
+  else{mvwaddch(panelb, ucursor[2]+1, 5, '>');}
+  panel2temp = ucursor[2]+2;
  
   wrefresh(panels);
   wrefresh(panelb);
@@ -191,31 +185,32 @@ char inputmove(void){
 
 
     case ' ':
-    if(print != 'b'){if(print != 'E'){hold = brushc;} brushc = 0;}else{brushc = hold;} break;
+    if(print != 'b'){if(print != 'E'){hold = ucursor[2];} ucursor[2] = 0;}else{ucursor[2] = hold;} break;
     case 'e':
-    (print != 'E')? (brushc = 1):(brushc = 0); break; 
+    (print != 'E')? (ucursor[2] = 1):(ucursor[2] = 0); break; 
    
-    case 'w': posy--; if(posy < 1){posy = 1;} break;
-    case 's': posy++; if(posy > height){posy = height;} break;
-    case 'd': posx+=spacing; if(posx > width-1){posx = width - 1;} break;
-    case 'a': posx-=spacing; if(posx < 2){posx = 2;} break;
+    case 'w': ucursor[0]--; if(ucursor[0] < 1){ucursor[0] = 1;} break;
+    case 's': ucursor[0]++; if(ucursor[0] > height){ucursor[0] = height;} break;
+    case 'd': ucursor[1]+=spacing; if(ucursor[1] > width-1){ucursor[1] = width - 1;} break;
+    case 'a': ucursor[1]-=spacing; if(ucursor[1] < 2){ucursor[1] = 2;} break;
 
-    case 'j': brushc --; break;
-    case 'k': brushc ++; break;
-    case 'u': brushc -= 2; break;
-    case 'i': brushc += 2; break;
+    case 'j': ucursor[2] --; break;
+    case 'k': ucursor[2] ++; break;
+    case 'u': ucursor[2] -= 2; break;
+    case 'i': ucursor[2] += 2; break;
     
     case '.': spacing ++; if(spacing>8){spacing = 8;} break;
     case ',': spacing --; if(spacing<1){spacing = 1;} break;
     
     case 'r': 
-      posy = height/2;
-      posx = width/2;
-      wmove(win, posy, posx);
+      ucursor[0] = height/2;
+      ucursor[1] = width/2;
+      wmove(win, ucursor[0], ucursor[1]);
       break;
     case 'Y': clear_canvas(TRUE); break;
     case 't': inputtext(); break;
     case 'b': combrush(); break;
+    case 'x': 
 
     case '+': savefunc(); break;
     case 'o': askopen(); break;
@@ -226,15 +221,15 @@ char inputmove(void){
     dir -= '0';
     if(dir == 0){dir = 10;} 
     dir =  (dir - 1)*2;
-    brushc = dir;
+    ucursor[2] = dir;
 
 
   }
 
 
-  if(brushc > brushnum){brushc = 0;} 
-  if(brushc < 0){brushc = brushnum;} 
-  print = brushes[brushc];
+  if(ucursor[2] > brushnum){ucursor[2] = 0;} 
+  if(ucursor[2] < 0){ucursor[2] = brushnum;} 
+  print = brushes[ucursor[2]];
   
   return dir;
 }
@@ -248,7 +243,7 @@ int combrush(void){
   noecho();
   comnum+=2;
   if(comnum <= brushnum){
-  brushc = comnum;
+  ucursor[2] = comnum;
   }
   wclear(panels);
   wclear(panelc);
@@ -267,14 +262,14 @@ void inputtext(void){
     storage = getch();
     if (storage == '\n'){break;}
     if (storage == KEY_BACKSPACE){
-      posx-=spacing;
-      mvwaddch(win, posy, posx, ' ');
-  *(board + height * (posy-1) + posx-1) = ' ';  
+      ucursor[1]-=spacing;
+      mvwaddch(win, ucursor[0], ucursor[1], ' ');
+  *(board + height * (ucursor[0]-1) + ucursor[1]-1) = ' ';  
    
     }else{
-      mvwaddch(win, posy, posx, storage);
-      *(board + height * (posy-1) + posx-1) = storage;  
-      posx+=spacing;
+      mvwaddch(win, ucursor[0], ucursor[1], storage);
+      *(board + height * (ucursor[0]-1) + ucursor[1]-1) = storage;  
+      ucursor[1]+=spacing;
     }  
     wrefresh(win);
   }

@@ -31,7 +31,7 @@ int setup(){
   }while(mhold == -1);
   */
   height = LINES/2;
-  width = COLS/2;
+  width = COLS/3;
 
   board = (char *)malloc(height*width * sizeof(char));
   return 0;
