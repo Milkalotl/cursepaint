@@ -50,7 +50,7 @@ void clear_canvas(bool is_window_active){
   for(int e = 0; e<height; e++) 
     for(int f = 0; f<width; f++) {
       *(board + e*height + f) = ' ';
-      if(is_window_active == TRUE) mvwaddch(win,posy,posx,' '); 
+      if(is_window_active == TRUE) mvwaddch(win,e,f,' '); 
     }
 
 
