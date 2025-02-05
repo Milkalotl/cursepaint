@@ -1,5 +1,8 @@
 # CURSEPAINT
 
+#THIS PROJECT HAS BEEN ABANDONED; PLEASE CHECK OUT THE CPPPAINT REPO FOR THE NEW VERSION;
+
+
 A small, terminal-based program meant to create ascii-based art. Designed to be used with ncurses aplications and games, and to be a robust application with all necessary tools and features to create any art. 
 
 ## Note for those that stumble upon this program
